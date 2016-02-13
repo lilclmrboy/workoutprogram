@@ -19,21 +19,44 @@ import sys
 print ("Generating exercise tables")
 
 activities = (
-    (1, 'Clean and Jerk', 1.0),
-    (2, 'Snatch', 0.8),
-    (3, 'Bench Press', 1.0),
-    (4, 'Clean', 1.0666),
-    (5, 'Clean High Pull', 1.3),
-    (6, 'Clean Pull', 1.3),
-    (7, 'Clean from Knees', 0.95)
+    (1, 'Clean and Jerk', 1.0, "kg"),
+    (2, 'Snatch', 0.8, "kg"),
+    (3, 'Bench Press', 1.0, "kg"),
+    (4, 'Clean', 1.0666, "kg"),
+    (5, 'Clean High Pull', 1.3, "kg"),
+    (6, 'Clean Pull', 1.3, "kg"),
+    (7, 'Clean from Knees', 0.95, "kg")
 )
 
 con = lite.connect('test.db')
 
 with con:
-    
-    cur = con.cursor()    
-    
+
+    cur = con.cursor()
+
     cur.execute("DROP TABLE IF EXISTS Exercises")
-    cur.execute("CREATE TABLE Exercises(Id INT, Name TEXT, PercentOfCleanAndJerk REAL)")
-    cur.executemany("INSERT INTO Exercises VALUES(?, ?, ?)", activities)
+    cur.execute("CREATE TABLE Exercises(Id INT, Name TEXT, PercentOfCleanAndJerk REAL), Units TEXT")
+    cur.executemany("INSERT INTO Exercises VALUES(?, ?, ?, ?)", activities)
+
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+# Python rewrite of:
+#   https://code.google.com/p/weightliftingworkout/source/browse/#svn%2Ftrunk%253Fstate%253Dclosed
+# 
+# import sqlite3 as lite
+# import sys
+#
+# print ("Generating workout program")
+#
+# con = lite.connect('test.db')
+#
+# with con:
+#
+# 	con.row_factory = lite.Row
+#
+# 	cur = con.cursor()
+# 	cur.execute("SELECT * FROM Exercises")
+# 	rows = cur.fetchall()
+#
+# 	for row in rows:
+# 		print "%s is %.0f percent of Clean and Jerk" %(row["Name"], 100.0 * row["PercentOfCleanAndJerk"])
