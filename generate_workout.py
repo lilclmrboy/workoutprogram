@@ -7,54 +7,46 @@ import sys
 from workout import ExerciseDetail
 from workout import Exercise
 from workout import Workout
-from datetime import datetime
+from workout import WorkoutProgram
+from datetime import datetime, timedelta
 from pytz import timezone
 import pytz
 
+# where:
+# 0 - Sunday
+# 1 - Monday
+# 2 - Tuesday
+# 3 - Wednesday
+# 4 - Thursday
+# 5 - Friday
+# 6 - Saturday
+workout_day_intervals = [1, 3, 5]
+
 print ("Generating workout program")
 
-dt = datetime(2016,4,4,tzinfo=pytz.utc)
-print dt
-wkout = Workout("Workout description", dt, 0.6)
+startdate = datetime(2016,2,14,tzinfo=pytz.utc)
+volume = 1000.0
+wp = WorkoutProgram("Strength Training", startdate, volume, 2, "matt")
 
-ex = Exercise("Snatch")
-ex.add_set(100.0, 5)
-ex.add_set(100.0, 4)
-ex.add_set(100.0, 3)
-ex.add_set(100.0, 3)
-wkout.add_exercise(ex)
+print startdate.strftime("%A")
 
-ex = Exercise("Squat")
-ex.add_set(100.0, 5)
-ex.add_set(100.0, 4)
-ex.add_set(100.0, 3)
-ex.add_set(100.0, 2)
-ex.add_set(100.0, 1)
-wkout.add_exercise(ex)
+newdt = startdate + timedelta(days=3)
+print newdt.strftime("%A")
 
-print wkout.name
-print('Workout %% of max: %.2f' % wkout.percentOfMax)
+for week in range(0, wp.workoutprogram_nWeeks):
+    workoutdate = wp.workoutprogram_dt_start + timedelta(days=1)
+    wkout = Workout("%s - Strength" % workoutdate.strftime("%A"), workoutdate, 0.6, volume)
+
+wkout = Workout("Workout description", startdate, 0.6, volume)
+wkout.add_exercise_target_volume("Press", 100.0, 6)
+wkout.add_exercise_target_volume("Squat", 100.0, 3)
 
 # print wkout.exercises[0].name
-volume = 1000.0
-
-for x in wkout.activities:
-    print('Activity name: %s' % x.name)
-    wkout.solve_activity_volume(x, volume)
-    print(' Derived volume: %.2f kg' % x.volume)
-    for s in x.sets:
-        print("  Set %d reps x %.2f kg" % (s.repititions, s.weight))
-
-
-
-
-    # print x.sets
-    # for s in x.sets:
-    #     print("\t%d x X", (s.repititions % s.weight))
-
-# for activities in wkout.exercises
-#     print activites.name
-    # for e in w.exercises:
-    #     print e.name
-    #     for s in e.sets:
-    #         print s.repitions
+print wkout.workout_name
+print('Workout %% of max: %.2f' % wkout.workout_percentOfMax)
+for x in wkout.workout_exercises:
+    print('Exercise name: %s' % x.exercise_name)
+    #wkout.solve_activity_volume(x, volume)
+    print(' Derived volume: %.2f kg' % wkout.workout_volume)
+    for s in x.exercise_sets:
+        print("  Set %d reps x %.0f kg" % (s.repititions, s.weight))
