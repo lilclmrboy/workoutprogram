@@ -60,7 +60,7 @@ class Workout(object):
 	def solve_exercise_volume(self, exercise, volume, minWeightPercent = 0.7, maxWeightPercent = 1.0, minSets = 1, maxSets = 10):
 
 		error = 1.0e9
-		xLimitMax = 100000
+		xLimitMax = 1000
 		nSets = len(exercise.exercise_sets)
 		ModeType = 1
 		volume_best = 0
@@ -82,10 +82,10 @@ class Workout(object):
 				if (exercise.exercise_sets[i].repititions < minRep):
 					minRep = exercise.exercise_sets[i].repititions
 
-		print("- Solving exercise %s for volume of %.1f kg" % (exercise.exercise_name, volume))
-		print("  Minimum reps: %d Maximum reps: %d" % (minRep, maxRep))
-		print("  Setting %% range from %.2f to %.2f" % (minWeightPercent, maxWeightPercent))
-		print("  Targeting %d sets for target volume of %.1f" % (nSets, volume))
+		# print("- Solving exercise %s for volume of %.1f kg" % (exercise.exercise_name, volume))
+		# print("  Minimum reps: %d Maximum reps: %d" % (minRep, maxRep))
+		# print("  Setting %% range from %.2f to %.2f" % (minWeightPercent, maxWeightPercent))
+		# print("  Targeting %d sets for target volume of %.1f" % (nSets, volume))
 
 		for x in range(0, xLimitMax):
 
@@ -123,3 +123,6 @@ class WorkoutProgram(object):
 		self.workoutprogram_workouts = []
 		self.workoutprogram_nWeeks = nweeks
 		self.workoutprogram_nWorkoutsPerWeek = 3
+
+	def add_workout(self, i):
+		self.workoutprogram_workouts.append(i)
