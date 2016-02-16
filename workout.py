@@ -5,6 +5,7 @@
 
 import math
 import random
+import sqlite3 as lite
 
 def Error(current, desired, errorResult):
 
