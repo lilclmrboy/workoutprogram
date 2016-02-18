@@ -4,6 +4,7 @@
 #   https://code.google.com/p/weightliftingworkout/source/browse/#svn%2Ftrunk%253Fstate%253Dclosed
 
 import sys
+import workout
 from workout import ExerciseDetail
 from workout import Exercise
 from workout import Workout
@@ -28,32 +29,40 @@ volume = 1000.0
 workout_day_inc = [1, 2, 2, 4]
 wp = WorkoutProgram("Strength Training", startdate, volume, 2, "matt")
 dayIndex = 0
+workoutCount = 0
 
 # ------------------ Workout Generation --------------------#
 for week in range(0, wp.workoutprogram_nWeeks):
 
-    dayIndex = dayIndex + workout_day_inc[0]
-    workoutdate = wp.workoutprogram_dt_start + timedelta(days=dayIndex)
-    wkout = Workout("%s - Strength" % workoutdate.strftime("%A"), workoutdate, 0.6, volume)
-    wkout.add_exercise_target_volume("Press", 100.0, 6)
-    wp.add_workout(wkout)
-    del wkout
-
-    dayIndex = dayIndex + workout_day_inc[1]
-    workoutdate = wp.workoutprogram_dt_start + timedelta(days=dayIndex)
-    wkout = Workout("%s - Strength" % workoutdate.strftime("%A"), workoutdate, 0.6, volume)
-    wkout.add_exercise_target_volume("Clean and Jerk", 100.0, 6)
-    wp.add_workout(wkout)
-    del wkout
-
-    dayIndex = dayIndex + workout_day_inc[2]
-    workoutdate = wp.workoutprogram_dt_start + timedelta(days=dayIndex)
-    wkout = Workout("%s - Olympic" % workoutdate.strftime("%A"), workoutdate, 0.6, volume)
-    wkout.add_exercise_target_volume("Snatch", 100.0, 6)
-    wp.add_workout(wkout)
-    del wkout
-
-    dayIndex = dayIndex + workout_day_inc[3]
+	dayIndex = dayIndex + workout_day_inc[0]
+	wPercent = workout.periodization_equation(workoutCount, 36)
+	workoutCount = workoutCount + 1 
+	workoutdate = wp.workoutprogram_dt_start + timedelta(days=dayIndex)
+	wkout = Workout("%s - Strength" % workoutdate.strftime("%A"), workoutdate, wPercent, volume)
+	wkout.add_exercise_target_volume("Snatch", 6)
+	#     rndex = wkout.pick_random_exercise("Core")
+	#     wkout.add_exercise(rndex['name'])
+	wp.add_workout(wkout)
+	del wkout
+	
+	wPercent = workout.periodization_equation(workoutCount, 36)
+	workoutCount = workoutCount + 1
+	dayIndex = dayIndex + workout_day_inc[1]
+	workoutdate = wp.workoutprogram_dt_start + timedelta(days=dayIndex)
+	wkout = Workout("%s - Strength" % workoutdate.strftime("%A"), workoutdate, wPercent, volume)
+	wkout.add_exercise_target_volume("Clean and Jerk", 6)
+	wp.add_workout(wkout)
+	del wkout
+	
+	wPercent = workout.periodization_equation(workoutCount, 36)
+	workoutCount = workoutCount + 1
+	dayIndex = dayIndex + workout_day_inc[2]
+	workoutdate = wp.workoutprogram_dt_start + timedelta(days=dayIndex)
+	wkout = Workout("%s - Olympic" % workoutdate.strftime("%A"), workoutdate, wPercent, volume)
+	wkout.add_exercise_target_volume("Snatch", 6)
+	wp.add_workout(wkout)
+	del wkout
+	dayIndex = dayIndex + workout_day_inc[3]
 
 # ----------------- Show the results ------------------------#
 # print wkout.exercises[0].name

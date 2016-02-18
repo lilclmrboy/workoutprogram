@@ -7,6 +7,33 @@ import math
 import random
 import sqlite3 as lite
 
+##########################################################################################
+
+def dict_factory(cursor, row):
+    d = {}
+    for idx,col in enumerate(cursor.description):
+        d[col[0]] = row[idx]
+    return d
+    
+##########################################################################################
+
+
+def periodization_equation(step, nTotalSteps, base = 0.6, nCycles = 3.0):
+	percent = 0.0
+	offset = 0.5
+	xOffset = 6.0
+	rate = 0.3
+	x = step
+	a = float(nTotalSteps) / float(nCycles)
+	z = (x + xOffset) / a
+	
+	period = offset + z - math.floor(z + 0.5)
+	percent = ((rate / nTotalSteps) * x + base) + 0.1 * period
+
+	return percent    
+
+##########################################################################################
+
 def Error(current, desired, errorResult):
 
 	error = 0.0
@@ -21,12 +48,16 @@ def Error(current, desired, errorResult):
 
 	return {'isLower':bSmallerError, 'error':errorResult}
 
+##########################################################################################
+
 class ExerciseDetail(object):
 
 	def __init__(self, weight, repititions = 1, time = 0.0):
 		self.repititions = repititions
 		self.weight = weight
 		self.time = time
+
+##########################################################################################
 
 class Exercise(object):
 
@@ -38,25 +69,63 @@ class Exercise(object):
 	def add_set(self, weight, repititions = 1, time = 0.0):
 		self.exercise_sets.append(ExerciseDetail(weight, repititions, time))
 
+##########################################################################################
+
 class Workout(object):
 
-	def __init__(self, name, dt, pmax, volume):
+	def __init__(self, name, dt, pmax, volume, cnj = 100.0):
 		self.workout_name = name
 		self.workout_dt = dt
 		self.workout_exercises = []
 		self.workout_percentOfMax = pmax
 		self.workout_volume = volume
+		self.workout_cnj_max = cnj
+		self.workout_database = "test.db"
+		
+	######################################################################################
 
-	def add_exercise(self, i):
-		self.workout_exercises.append(i)
+	def pick_random_exercise(self, exStyle):
+		con = lite.connect(self.workout_database)
+		con.row_factory = lite.Row
+		cur = con.cursor()
+		cur.execute("SELECT * FROM Exercises WHERE Type like '%{tn}%'".format(tn=exStyle))
+		rows = cur.fetchall()
+		# for row in rows:
+		# 	print("Found exercise that matches type %s: %s" % (type, row["Name"]))
+		con.close()
+		exResult = random.choice(rows)
+		return {'name':str(exResult["Name"])}
 
-	def add_exercise_target_volume(self, exname, maxWeight, nsets, nrepsmax = 8, minRep = 1):
-		ex = Exercise(exname)
+
+	######################################################################################
+
+	def add_exercise(self, ex):
+		self.workout_exercises.append(ex)
+
+	######################################################################################
+
+	def add_exercise_target_volume(self, exname, nsets, nrepsmax = 8, minRep = 1):
+		print "begin adding exercise target volume"
+		
+		con = lite.connect(self.workout_database)
+		con.row_factory = dict_factory
+		cur = con.cursor()
+		cur.execute("SELECT Name, PercentOfCleanAndJerk FROM Exercises WHERE Name is '{tn}'".format(tn=exname))
+		result = cur.fetchone()
+		con.close()
+		
+		ex = Exercise(result['Name'])
+		cnjratio = result['PercentOfCleanAndJerk']
+				
 		for i in range(0, nsets):
-			ex.add_set(maxWeight, nrepsmax)
+			ex.add_set(cnjratio * self.workout_cnj_max, nrepsmax)
 		self.add_exercise(ex)
+		
+		print self.workout_volume
+		
 		result = self.solve_exercise_volume(self.workout_exercises[-1], self.workout_volume)
-		self.workout_volume = result['volume']
+
+	######################################################################################
 
 	def solve_exercise_volume(self, exercise, volume, minWeightPercent = 0.7, maxWeightPercent = 1.0, minSets = 1, maxSets = 10):
 
@@ -114,16 +183,23 @@ class Workout(object):
 
 		return {'volume': volume_best}
 
+##########################################################################################
+
 class WorkoutProgram(object):
 
-	def __init__(self, description, dt, volume, nweeks, username):
+	def __init__(self, description, dt, volume, nweeks, username, cnj = 100.0):
 		self.workoutprogram_description = description
 		self.workoutprogram_dt_start = dt
 		self.workoutprogram_volume_max = volume
+		self.workoutprogram_cnj_max = cnj
 		self.workoutprogram_username = username
 		self.workoutprogram_workouts = []
 		self.workoutprogram_nWeeks = nweeks
 		self.workoutprogram_nWorkoutsPerWeek = 3
+		self.workoutprogram_nWorkoutDays = 0
+
+	######################################################################################
 
 	def add_workout(self, i):
 		self.workoutprogram_workouts.append(i)
+		self.workoutprogram_nWorkoutDays = self.workoutprogram_nWorkoutDays + 1
