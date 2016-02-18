@@ -105,7 +105,7 @@ class Workout(object):
 	######################################################################################
 
 	def add_exercise_target_volume(self, exname, nsets, nrepsmax = 8, minRep = 1):
-		print "begin adding exercise target volume"
+# 		print "begin adding exercise target volume"
 		
 		con = lite.connect(self.workout_database)
 		con.row_factory = dict_factory
@@ -121,7 +121,7 @@ class Workout(object):
 			ex.add_set(cnjratio * self.workout_cnj_max, nrepsmax)
 		self.add_exercise(ex)
 		
-		print self.workout_volume
+		# print self.workout_volume
 		
 		result = self.solve_exercise_volume(self.workout_exercises[-1], self.workout_volume)
 
