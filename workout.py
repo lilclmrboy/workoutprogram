@@ -26,8 +26,10 @@ def periodization_equation(step, nTotalSteps, base = 0.6, nCycles = 3.0):
 	x = step
 	a = float(nTotalSteps) / float(nCycles)
 	z = (x + xOffset) / a
-	
-	period = offset + z - math.floor(z + 0.5)
+
+	b = ((float(nTotalSteps) + 1)/ nCycles)
+ 	period = (math.fmod(step, b) * b / (b - 1.0)) / b
+
 	percent = ((rate / nTotalSteps) * x + base) + 0.1 * period
 
 	return percent    

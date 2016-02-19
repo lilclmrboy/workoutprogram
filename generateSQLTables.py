@@ -33,7 +33,18 @@ activities = (
     (12, 'Front Squat', 1.224, "kg", "Strength, Squat"),
     (13, 'Overhead Squat', 0.88, "kg", "Olympic, Strength, Squat"),
     (14, 'Sit-ups', 100.0, "reps", "Core"),
-    (15, 'Crunches', 100.0, "reps", "Core")
+    (15, 'Crunches', 100.0, "reps", "Core"),
+    (16, 'Press', 0.75, "kg", "Strength, Press"),
+    (17, 'Push Press', 0.825, "kg", "Strength, Press"),
+    (18, 'Press Behind Neck', 0.825, "kg", "Strength, Press"),
+    (19, 'Curls', 0.5, "kg", "Strength")
+)
+
+users_prs = (
+    (1, 'Matt', 'Krugman', 95.0, "kg", 1.0, "Clean and Jerk", "2016-02-18", ""),
+    (2, 'Matt', 'Krugman', 75.0, "kg", 1.0, "Snatch", "2016-02-18", ""),
+    (3, 'Matt', 'Krugman', 150.0, "kg", 1.0, "Deadlift", "2016-02-18", ""),
+	(4, 'Matt', 'Krugman', 143.0, "kg", 1.0, "Back Squat", "2016-02-18", ""),
 )
 
 con = lite.connect('test.db')
@@ -43,9 +54,12 @@ with con:
     cur = con.cursor()
 
     cur.execute("DROP TABLE IF EXISTS Exercises")
+    cur.execute("DROP TABLE IF EXISTS UserRecords")
     cur.execute("CREATE TABLE Exercises(Id INT, Name TEXT, PercentOfCleanAndJerk REAL, Units TEXT, Type TEXT)")
+    cur.execute("CREATE TABLE UserRecords(Id INT, FirstName TEXT, LastName TEXT, Record REAL, Units TEXT, Reps REAL, Exercise TEXT, Date TEXT, Notes TEXT)")
     cur.executemany("INSERT INTO Exercises VALUES(?, ?, ?, ?, ?)", activities)
-
+    cur.executemany("INSERT INTO UserRecords VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)", users_prs)
+    
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 # Python rewrite of:
@@ -74,5 +88,11 @@ with con:
 
     for row in rows:
         print("Found exercise that matches type Core: %s" % row["Name"])
+        
+    cur.execute("SELECT * FROM UserRecords")
+    rows = cur.fetchall()	
+    
+    for row in rows:
+    	print row
 
 con.close()
