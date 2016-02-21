@@ -20,16 +20,13 @@ def dict_factory(cursor, row):
 
 def periodization_equation(step, nTotalSteps, base = 0.6, nCycles = 3.0):
 	percent = 0.0
-	offset = 0.5
-	xOffset = 6.0
-	rate = 0.3
-	x = step
-	a = float(nTotalSteps) / float(nCycles)
-	z = (x + xOffset) / a
+ 	rate = 0.3
+ 	x = step
 
-	b = ((float(nTotalSteps) + 1)/ nCycles)
+	maxSteps = float(nTotalSteps) - 1.0
+
+	b = ((float(maxSteps) + 1)/ nCycles)
  	period = (math.fmod(step, b) * b / (b - 1.0)) / b
-
 	percent = ((rate / nTotalSteps) * x + base) + 0.1 * period
 
 	return percent    
@@ -54,22 +51,24 @@ def Error(current, desired, errorResult):
 
 class ExerciseDetail(object):
 
-	def __init__(self, weight, repititions = 1, time = 0.0):
+	def __init__(self, weight, repititions = 1, time = 0.0, units = ""):
 		self.repititions = repititions
 		self.weight = weight
 		self.time = time
+		self.units = units
 
 ##########################################################################################
 
 class Exercise(object):
 
-	def __init__(self, name):
+	def __init__(self, name, bOptional = 0):
 		self.exercise_name = name
 		self.exercise_sets = []
 		# self.exercise_volume = 0
+		self.exercise_isoptional = bOptional
 
-	def add_set(self, weight, repititions = 1, time = 0.0):
-		self.exercise_sets.append(ExerciseDetail(weight, repititions, time))
+	def add_set(self, weight, repititions = 1, time = 0.0, units = ""):
+		self.exercise_sets.append(ExerciseDetail(weight, repititions, time, units))
 
 ##########################################################################################
 
@@ -83,7 +82,7 @@ class Workout(object):
 		self.workout_volume = volume
 		self.workout_cnj_max = cnj
 		self.workout_database = "test.db"
-		
+			
 	######################################################################################
 
 	def pick_random_exercise(self, exStyle):
@@ -96,34 +95,87 @@ class Workout(object):
 		# 	print("Found exercise that matches type %s: %s" % (type, row["Name"]))
 		con.close()
 		exResult = random.choice(rows)
-		return {'name':str(exResult["Name"])}
-
-
-	######################################################################################
-
-	def add_exercise(self, ex):
-		self.workout_exercises.append(ex)
+ 		return {'name':str(exResult['Name'])}
 
 	######################################################################################
 
-	def add_exercise_target_volume(self, exname, nsets, nrepsmax = 8, minRep = 1):
+	def add_exercise(self, exname, nSets = 1, minWeightPercent = 0.7, maxWeightPercent = 1.0, bOptional = 0):
+		con = lite.connect(self.workout_database)
+		con.row_factory = dict_factory
+		cur = con.cursor()
+		cur.execute("SELECT PercentOfCleanAndJerk, Units FROM Exercises WHERE Name is '{tn}'".format(tn=exname))
+		result = cur.fetchone()
+		cur.execute("SELECT * FROM UserRecords WHERE Exercise is '{tn}'".format(tn=exname))
+		userPR = cur.fetchone()
+		con.close()
+		
+		cnjratio = result['PercentOfCleanAndJerk']
+		units = result['Units']
+		time = 0.0
+		reps = 1.0
+		
+		ex = Exercise(exname)
+		
+		if (units == "reps"):
+			reps = cnjratio * self.workout_percentOfMax
+			ex.add_set(1.0, reps, time, units)
+			
+		if (units == "kg"):
+			weight = 0.0
+			if not userPR:
+				weight = cnjratio * self.workout_percentOfMax * self.workout_cnj_max
+			else:
+# 				print "PR defined for %s" % userPR['Exercise']
+				weight = userPR['PR'] * self.workout_percentOfMax
+			
+			for i in range(0, nSets):
+				ex.add_set(weight, reps, time, units)
+						    
+ 		self.workout_exercises.append(ex)
+
+	######################################################################################
+
+	def add_exercise_target_volume(self, exname, nsets, nrepsmax = 8, minRep = 1, bOptional = 0):
 # 		print "begin adding exercise target volume"
 		
 		con = lite.connect(self.workout_database)
 		con.row_factory = dict_factory
 		cur = con.cursor()
-		cur.execute("SELECT Name, PercentOfCleanAndJerk FROM Exercises WHERE Name is '{tn}'".format(tn=exname))
+		cur.execute("SELECT Name, PercentOfCleanAndJerk, Units FROM Exercises WHERE Name is '{tn}'".format(tn=exname))
 		result = cur.fetchone()
+		cur.execute("SELECT * FROM UserRecords WHERE Exercise is '{tn}'".format(tn=exname))
+		userPR = cur.fetchone()
 		con.close()
 		
-		ex = Exercise(result['Name'])
+		ex = Exercise(result['Name'], bOptional)
 		cnjratio = result['PercentOfCleanAndJerk']
+		units = result['Units']
+		time = 0.0
+		weight = 0.0
+
+		if (units == "kg"):
+			if not userPR:
+				weight = cnjratio * self.workout_percentOfMax * self.workout_cnj_max
+			else:
+# 				print "PR defined for %s" % userPR['Exercise']
+				weight = userPR['PR'] * self.workout_percentOfMax
+		
+		# Decrease our maximum number of reps as we get closer to our max percent
+		# Function  :	Polynomial
+		# Descr 1  :	f(x) = const + a1*x +...+ a3*x^3
+		# Descr 2  :	deg: degree of the polynomial
+		# deg  	=	   3.0000
+		const	=	 162.0201   
+		a1   	=	-499.2764   
+		a2   	=	 540.4491   
+		a3   	=	-202.1640   
+		x = self.workout_percentOfMax
+		if (nrepsmax == 8):
+			nrepsmax = int(const + a1 * x + a2 * x * x + a3 * x * x * x)
 				
 		for i in range(0, nsets):
-			ex.add_set(cnjratio * self.workout_cnj_max, nrepsmax)
-		self.add_exercise(ex)
-		
-		# print self.workout_volume
+			ex.add_set(weight, nrepsmax)
+		self.workout_exercises.append(ex)
 		
 		result = self.solve_exercise_volume(self.workout_exercises[-1], self.workout_volume)
 
@@ -193,12 +245,23 @@ class WorkoutProgram(object):
 		self.workoutprogram_description = description
 		self.workoutprogram_dt_start = dt
 		self.workoutprogram_volume_max = volume
-		self.workoutprogram_cnj_max = cnj
+		
 		self.workoutprogram_username = username
 		self.workoutprogram_workouts = []
 		self.workoutprogram_nWeeks = nweeks
 		self.workoutprogram_nWorkoutsPerWeek = 3
 		self.workoutprogram_nWorkoutDays = 0
+		self.workoutprogram_database = "test.db"
+		
+		con = lite.connect(self.workoutprogram_database)
+		con.row_factory = dict_factory
+		cur = con.cursor()
+		cur.execute("SELECT * FROM UserRecords WHERE FirstName is '{tn}' AND Exercise is '{tx}'".format(tn=self.workoutprogram_username, tx="Clean and Jerk"))
+		result = cur.fetchone()
+		con.close()
+		
+		self.workoutprogram_cnj_max = result["PR"]
+		
 
 	######################################################################################
 
