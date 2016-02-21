@@ -5,7 +5,11 @@
 
 import math
 import random
+from datetime import datetime, timedelta
+from dateutil import tz
 import sqlite3 as lite
+from icalendar import Calendar, Event
+import tempfile, os
 
 ##########################################################################################
 
@@ -66,8 +70,10 @@ class Exercise(object):
 		self.exercise_sets = []
 		# self.exercise_volume = 0
 		self.exercise_isoptional = bOptional
+		self.exercise_units = ""
 
 	def add_set(self, weight, repititions = 1, time = 0.0, units = ""):
+		self.exercise_units = units
 		self.exercise_sets.append(ExerciseDetail(weight, repititions, time, units))
 
 ##########################################################################################
@@ -174,7 +180,7 @@ class Workout(object):
 			nrepsmax = int(const + a1 * x + a2 * x * x + a3 * x * x * x)
 				
 		for i in range(0, nsets):
-			ex.add_set(weight, nrepsmax)
+			ex.add_set(weight, nrepsmax, time, units)
 		self.workout_exercises.append(ex)
 		
 		result = self.solve_exercise_volume(self.workout_exercises[-1], self.workout_volume)
@@ -241,9 +247,9 @@ class Workout(object):
 
 class WorkoutProgram(object):
 
-	def __init__(self, description, dt, volume, nweeks, username, cnj = 100.0):
+	def __init__(self, description, utc, volume, nweeks, username, cnj = 100.0):
 		self.workoutprogram_description = description
-		self.workoutprogram_dt_start = dt
+		
 		self.workoutprogram_volume_max = volume
 		
 		self.workoutprogram_username = username
@@ -262,7 +268,46 @@ class WorkoutProgram(object):
 		
 		self.workoutprogram_cnj_max = result["PR"]
 		
-
+		from_zone = tz.tzutc()
+		to_zone = tz.tzlocal()
+		
+		myutc = utc.replace(tzinfo=from_zone)
+		self.workoutprogram_dt_start = myutc.astimezone(to_zone)
+	
+	######################################################################################
+		
+	def create_icalendar_workout(self):
+		print "Generating iCalendar"
+		cal = Calendar()
+		cal.add('prodid', '-//My workout calendar//mxm.dk//')
+		cal.add('version', '2.0')
+		
+		for p in self.workoutprogram_workouts:
+			event = Event()
+			event.add('summary', p.workout_name)
+			event.add('dtstart', p.workout_dt + timedelta(hours=-11))
+			event.add('dtend',   p.workout_dt + timedelta(hours=-9))
+			descriptionText = "%.0f%% of max targeting %.f kg volume\n\n" % (100.0 * p.workout_percentOfMax, self.workoutprogram_volume_max)
+			
+			for x in p.workout_exercises:
+				descriptionText += '  %s\n' % x.exercise_name
+				for s in x.exercise_sets:
+					if (s.units == "kg"):
+						descriptionText += "    %d reps x %.0f kg [%.0f lbs]\n" % (s.repititions, s.weight, s.weight * 2.204)
+					if (s.units == "reps"):
+						descriptionText += "    %d reps\n" % s.repititions
+					if (s.units == "sec"):
+						descriptionText += "    %d seconds\n" % s.weight
+					
+			event['DESCRIPTION'] = descriptionText
+			cal.add_component(event)
+				
+		# Write the calendar file
+		ifilename = "workout-%s.ics" % self.workoutprogram_username
+		f = open(ifilename, 'wb')
+		f.write(cal.to_ical())
+		f.close()
+		
 	######################################################################################
 
 	def add_workout(self, i):
