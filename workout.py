@@ -206,7 +206,10 @@ class Workout(object):
 			exercise.exercise_sets[i].weight = round((minWeightPercent + i * ((maxWeightPercent - minWeightPercent) / (nSets - 1))) * endWeight)
 			if (exercise.exercise_sets[i].repititions > maxRep):
 				maxRep = exercise.exercise_sets[i].repititions
-
+				
+			if (maxRep > 8):
+				maxRep = 8
+				
 		if (minRep != 1):
 			for i in range(0, nSets):
 				if (exercise.exercise_sets[i].repititions < minRep):
@@ -307,6 +310,32 @@ class WorkoutProgram(object):
 		f = open(ifilename, 'wb')
 		f.write(cal.to_ical())
 		f.close()
+		
+	######################################################################################
+
+	def create_txt_workout(self):
+	
+		info = "";
+	
+		for p in self.workoutprogram_workouts:
+			info += p.workout_name
+			info += '  Targeting %.0f%% of max\n' % (p.workout_percentOfMax * 100.0)
+			print info
+			for x in p.workout_exercises:
+				info += '  %s\n' % x.exercise_name
+				for s in x.exercise_sets:
+					if (s.units == "kg"):
+						info += "    %d reps x %.0f kg [%.0f lbs]\n" % (s.repititions, s.weight, s.weight * 2.204)
+					if (s.units == "reps"):
+						info += "    %d reps\n" % s.repititions
+					if (s.units == "sec"):
+						info += "    %d seconds\n" % s.weight		
+									
+		ifilename = "workout-%s.txt" % self.workoutprogram_username
+		f = open(ifilename, 'wb')
+		f.write(info)
+		f.close()			
+		
 		
 	######################################################################################
 

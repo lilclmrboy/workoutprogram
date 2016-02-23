@@ -47,7 +47,7 @@ for week in range(0, wp.workoutprogram_nWeeks):
 	rndex = wkout.pick_random_exercise("Squat")
 	wkout.add_exercise_target_volume(rndex['name'], 5)
 	wkout.add_exercise_target_volume("Deadlift", 5)
-	wkout.add_exercise("Pull ups")
+	wkout.add_exercise("Push ups")
 	rndex = wkout.pick_random_exercise("Core")
  	wkout.add_exercise(rndex['name'])
 	wp.add_workout(wkout)
@@ -64,7 +64,7 @@ for week in range(0, wp.workoutprogram_nWeeks):
 	rndex = wkout.pick_random_exercise("Squat")
 	wkout.add_exercise_target_volume(rndex['name'], 5)
 	wkout.add_exercise_target_volume("Deadlift", 5)
-	wkout.add_exercise("Pull ups")
+	wkout.add_exercise("Push ups")
 	rndex = wkout.pick_random_exercise("Core")
  	wkout.add_exercise(rndex['name'])
 	wp.add_workout(wkout)
@@ -84,19 +84,7 @@ for week in range(0, wp.workoutprogram_nWeeks):
 	wp.add_workout(wkout)
 	dayIndex = dayIndex + workout_day_inc[3]
 
-# ----------------- Show the results ------------------------#
-# print wkout.exercises[0].name
-for p in wp.workoutprogram_workouts:
-    print p.workout_name
-    print('  Targeting %.0f%% of max' % (p.workout_percentOfMax * 100.0))
-    for x in p.workout_exercises:
-        print('  Exercise name: %s' % x.exercise_name)
-        #wkout.solve_activity_volume(x, volume)
-        print('   Derived volume: %.2f kg' % p.workout_volume)
-        for s in x.exercise_sets:
-            print("    %d reps x %.0f kg" % (s.repititions, s.weight))
 
-# ----------------- End show result ------------------------#
-
+wp.create_txt_workout()
 wp.create_icalendar_workout()
 

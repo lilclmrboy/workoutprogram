@@ -94,7 +94,7 @@ activities = (
     (14, 'Jerk Recover'        , 1.20    , "kg"  , "Olympic, Jerk-Stability"), 
     (15, 'Jerk Rack'           , 1.10    , "kg"  , "Olympic, Jerk"),
     (16, 'Manual Situps'       , 10.0    , "reps", "Partner"),
-    (17, 'Overhead Squat'      , 0.88    , "kg"  , "Olympic, Strength, Squat"), 
+    (17, 'Overhead Squat'      , 0.88    , "kg"  , "Olympic, Strength, Olymipic-Squat"), 
     (18, 'Plank'               , 120.0   , "sec" , "Core"),
     (19, 'Press'               , 0.75    , "kg"  , "Strength, Press"),
     (20, 'Press Behind Neck'   , 0.825   , "kg"  , "Strength, Press"),
@@ -112,10 +112,10 @@ activities = (
 )
 
 users_prs = (
-    (1, 'Matt', 'Krugman', 95.0, "kg", 1.0, "Clean and Jerk", "2016-02-18", ""),
-    (2, 'Matt', 'Krugman', 75.0, "kg", 1.0, "Snatch", "2016-02-18", ""),
-    (3, 'Matt', 'Krugman', 150.0, "kg", 1.0, "Deadlift", "2016-02-18", ""),
-	(4, 'Matt', 'Krugman', 143.0, "kg", 1.0, "Back Squat", "2016-02-18", ""),
+    (1, 'Matt', 'Krugman', 97.5, "kg", 1.0, "Clean and Jerk", "2016-02-18", ""),
+    (2, 'Matt', 'Krugman', 77.5, "kg", 1.0, "Snatch", "2016-02-18", ""),
+    (3, 'Matt', 'Krugman', 160.0, "kg", 1.0, "Deadlift", "2016-02-18", ""),
+	(4, 'Matt', 'Krugman', 170.0, "kg", 1.0, "Back Squat", "2016-02-18", ""),
 )
 
 con = lite.connect('test.db')
