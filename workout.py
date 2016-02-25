@@ -13,6 +13,145 @@ import tempfile, os
 
 ##########################################################################################
 
+#define mCLIMBING_5p2 9
+#define mCLIMBING_5p3 12
+#define mCLIMBING_5p4 15
+#define mCLIMBING_5p5 18
+#define mCLIMBING_5p6 21
+#define mCLIMBING_5p7 24
+#define mCLIMBING_5p8m 27
+#define mCLIMBING_5p8 30
+#define mCLIMBING_5p8p 33
+#define mCLIMBING_5p9m 36
+#define mCLIMBING_5p9 39
+#define mCLIMBING_5p9p 42
+#define mCLIMBING_5p10a 45
+#define mCLIMBING_5p10b 48
+#define mCLIMBING_5p10c 51
+#define mCLIMBING_5p10d 54
+#define mCLIMBING_5p11a 57
+#define mCLIMBING_5p11b 60
+#define mCLIMBING_5p11c 63
+#define mCLIMBING_5p11d 66
+#define mCLIMBING_5p12a 69
+#define mCLIMBING_5p12b 72
+#define mCLIMBING_5p12c 75
+#define mCLIMBING_5p12d 78
+#define mCLIMBING_5p13a 81
+#define mCLIMBING_5p13b 84
+#define mCLIMBING_5p13c 87
+#define mCLIMBING_5p13d 90
+#define mCLIMBING_5p14a 93
+#define mCLIMBING_5p14b 96
+#define mCLIMBING_5p14c 99
+
+#define mCLIMBING_V0 mCLIMBING_5p5
+#define mCLIMBING_V0p mCLIMBING_5p6
+#define mCLIMBING_V1 mCLIMBING_5p8
+#define mCLIMBING_V2 mCLIMBING_5p9
+#define mCLIMBING_V3 mCLIMBING_5p10a
+#define mCLIMBING_V4 mCLIMBING_5p10d
+#define mCLIMBING_V5 mCLIMBING_5p11b
+#define mCLIMBING_V6 mCLIMBING_5p11d
+#define mCLIMBING_V7 mCLIMBING_5p12a
+#define mCLIMBING_V8 mCLIMBING_5p12c
+
+#define mCLIMBING_SPOT1 mCLIMBING_V0
+#define mCLIMBING_SPOT1p mCLIMBING_V1
+#define mCLIMBING_SPOT2 mCLIMBING_V1
+#define mCLIMBING_SPOT2p mCLIMBING_V2
+#define mCLIMBING_SPOT3m mCLIMBING_V2
+#define mCLIMBING_SPOT3 mCLIMBING_V3
+#define mCLIMBING_SPOT3p mCLIMBING_V4
+#define mCLIMBING_SPOT4m mCLIMBING_V5
+#define mCLIMBING_SPOT4 mCLIMBING_V6
+#define mCLIMBING_SPOT4p mCLIMBING_V7
+#define mCLIMBING_SPOT5m mCLIMBING_V7
+#define mCLIMBING_SPOT5 mCLIMBING_V8
+#define mCLIMBING_SPOT5p mCLIMBING_V9
+
+def climbing_convert_range_to_grade(value):
+
+	vgrade = "V0"
+	yosgrade = "5.0"
+	spotgrade = "1 spot"
+	
+	if ((value > 0) and (value <= 9)):
+		yosgrade = "5.2"
+	if ((value > 9) and (value <= 12)):
+		yosgrade = "5.3"
+	if ((value > 12) and (value <= 15)):
+		yosgrade = "5.4"
+	if ((value > 15) and (value <= 18)):
+		yosgrade = "5.5"
+	if ((value > 18) and (value <= 21)):
+		yosgrade = "5.6"		
+	if ((value > 21) and (value <= 24)):
+		yosgrade = "5.7"	
+	if ((value > 24) and (value <= 27)):
+		yosgrade = "5.8-"
+	if ((value > 27) and (value <= 30)):
+		yosgrade = "5.8"
+	if ((value > 30) and (value <= 33)):
+		yosgrade = "5.8+"
+	if ((value > 33) and (value <= 36)):
+		yosgrade = "5.9-"
+	if ((value > 36) and (value <= 39)):
+		yosgrade = "5.9"
+	if ((value > 39) and (value <= 42)):
+		yosgrade = "5.9+"
+	if ((value > 42) and (value <= 45)):
+		yosgrade = "5.10a"
+		vgrade = "V0+"
+	if ((value > 45) and (value <= 48)):
+		yosgrade = "5.10b"
+		vgrade = "V0+"
+	if ((value > 48) and (value <= 51)):
+		yosgrade = "5.10c"
+		vgrade = "V1"
+		spotgrade = "2 spot"
+	if ((value > 51) and (value <= 54)):
+		yosgrade = "5.10d"
+		vgrade = "V1"
+		spotgrade = "2+ spot"		
+	if ((value > 54) and (value <= 57)):
+		yosgrade = "5.11a"
+		vgrade = "V2"
+		spotgrade = "3- spot"
+	if ((value > 57) and (value <= 60)):
+		yosgrade = "5.11b"
+		vgrade = "V3"
+		spotgrade = "3 spot"
+	if ((value > 60) and (value <= 63)):
+		yosgrade = "5.11c"
+		vgrade = "V4"
+		spotgrade = "3+ spot"
+	if ((value > 63) and (value <= 66)):
+		yosgrade = "5.11d"
+		vgrade = "V4"
+		spotgrade = "3+ spot"
+	if ((value > 66) and (value <= 69)):
+		yosgrade = "5.12a"
+		vgrade = "V4"
+		spotgrade = "4- spot"
+	if ((value > 69) and (value <= 72)):
+		yosgrade = "5.12b"
+		vgrade = "V5"
+		spotgrade = "4- spot"
+	if ((value > 72) and (value <= 75)):
+		yosgrade = "5.12c"
+		vgrade = "V6"
+		spotgrade = "4 spot"
+	if ((value > 75) and (value <= 78)):
+		yosgrade = "5.12d"
+		vgrade = "V6"
+		spotgrade = "4+ spot"
+																															
+	return {'yos':yosgrade, 'v':vgrade, 'spot':spotgrade }
+		
+
+##########################################################################################
+
 def dict_factory(cursor, row):
     d = {}
     for idx,col in enumerate(cursor.description):
@@ -122,6 +261,12 @@ class Workout(object):
 		
 		ex = Exercise(exname)
 		
+		if (units == "yos"):
+			if not userPR:
+				weight = cnjratio * self.workout_percentOfMax
+			else:
+				weight = userPR['PR'] * self.workout_percentOfMax
+		
 		if (units == "reps"):
 			reps = cnjratio * self.workout_percentOfMax
 			ex.add_set(1.0, reps, time, units)
@@ -158,6 +303,12 @@ class Workout(object):
 		units = result['Units']
 		time = 0.0
 		weight = 0.0
+		
+		if (units == "yos"):
+			if not userPR:
+				weight = cnjratio * self.workout_percentOfMax
+			else:
+				weight = userPR['PR'] * self.workout_percentOfMax
 
 		if (units == "kg"):
 			if not userPR:
@@ -279,7 +430,7 @@ class WorkoutProgram(object):
 	
 	######################################################################################
 		
-	def create_icalendar_workout(self):
+	def create_icalendar_workout(self, descName = "workout"):
 		print "Generating iCalendar"
 		cal = Calendar()
 		cal.add('prodid', '-//My workout calendar//mxm.dk//')
@@ -301,19 +452,22 @@ class WorkoutProgram(object):
 						descriptionText += "    %d reps\n" % s.repititions
 					if (s.units == "sec"):
 						descriptionText += "    %d seconds\n" % s.weight
+					if (s.units == "yos"):
+						climbing = climbing_convert_range_to_grade(s.weight)
+						info += "    %s (%s) [%s]\n" % (climbing['yos'], climbing['v'], climbing['spot'])		
 					
 			event['DESCRIPTION'] = descriptionText
 			cal.add_component(event)
 				
 		# Write the calendar file
-		ifilename = "workout-%s.ics" % self.workoutprogram_username
+		ifilename = "%s-%s.ics" % (descName, self.workoutprogram_username)
 		f = open(ifilename, 'wb')
 		f.write(cal.to_ical())
 		f.close()
 		
 	######################################################################################
 
-	def create_txt_workout(self):
+	def create_txt_workout(self, descName = "workout"):
 	
 		info = "";
 	
@@ -329,9 +483,12 @@ class WorkoutProgram(object):
 					if (s.units == "reps"):
 						info += "    %d reps\n" % s.repititions
 					if (s.units == "sec"):
-						info += "    %d seconds\n" % s.weight		
+						info += "    %d seconds\n" % s.weight
+					if (s.units == "yos"):
+						climbing = climbing_convert_range_to_grade(s.weight)
+						info += "    x%d %s (%s) [%s]\n" % (s.repititions, climbing['yos'], climbing['v'], climbing['spot'])			
 									
-		ifilename = "workout-%s.txt" % self.workoutprogram_username
+		ifilename = "%s-%s.txt" % (descName, self.workoutprogram_username)
 		f = open(ifilename, 'wb')
 		f.write(info)
 		f.close()			
