@@ -345,8 +345,10 @@ class Workout(object):
 		nSets = len(exercise.exercise_sets)
 		ModeType = 1
 		volume_best = 0
-		maxRep = 1
+		maxRep = 8
 		minRep = 1
+		
+
 
 		# Derive target weights for each sets
 		# while at it, find the highest rep count
@@ -360,6 +362,10 @@ class Workout(object):
 				
 			if (maxRep > 8):
 				maxRep = 8
+				
+			if (volume < 2000):
+				maxRep = 6
+				minRep = 3				
 				
 		if (minRep != 1):
 			for i in range(0, nSets):
@@ -477,7 +483,9 @@ class WorkoutProgram(object):
 			print info
 			for x in p.workout_exercises:
 				info += '  %s\n' % x.exercise_name
+				set_volume = 0
 				for s in x.exercise_sets:
+					set_volume = set_volume + s.repititions * s.weight
 					if (s.units == "kg"):
 						info += "    %d reps x %.0f kg [%.0f lbs]\n" % (s.repititions, s.weight, s.weight * 2.204)
 					if (s.units == "reps"):
@@ -486,7 +494,7 @@ class WorkoutProgram(object):
 						info += "    %d seconds\n" % s.weight
 					if (s.units == "yos"):
 						climbing = climbing_convert_range_to_grade(s.weight)
-						info += "    x%d %s (%s) [%s]\n" % (s.repititions, climbing['yos'], climbing['v'], climbing['spot'])			
+						info += "    x%d %s (%s) [%s]\n" % (s.repititions, climbing['yos'], climbing['v'], climbing['spot'])
 									
 		ifilename = "%s-%s.txt" % (descName, self.workoutprogram_username)
 		f = open(ifilename, 'wb')

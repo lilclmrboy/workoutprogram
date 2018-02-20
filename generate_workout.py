@@ -24,8 +24,8 @@ import pytz
 
 print ("Generating workout program")
 
-startdate = datetime(2016,2,22,tzinfo=pytz.utc)
-volume = 1000.0
+startdate = datetime(2017,7,10,tzinfo=pytz.utc)
+volume = 1800.0
 workout_day_inc = [1, 2, 2, 2]
 wp = WorkoutProgram("Strength Training", startdate, volume, 12, "Matt")
 dayIndex = 0
@@ -59,7 +59,7 @@ for week in range(0, wp.workoutprogram_nWeeks):
 	wkout = Workout("%s - Strength" % (workoutdate.strftime("%A")), workoutdate, wPercent, volume)
 	rndex = wkout.pick_random_exercise("Press")
 	wkout.add_exercise_target_volume(rndex['name'], 5)
-	rndex = wkout.pick_random_exercise("Olympic")
+	rndex = wkout.pick_random_exercise("Clean")
 	wkout.add_exercise_target_volume(rndex['name'], 5)
 	rndex = wkout.pick_random_exercise("Squat")
 	wkout.add_exercise_target_volume(rndex['name'], 5)
@@ -74,7 +74,8 @@ for week in range(0, wp.workoutprogram_nWeeks):
 	dayIndex = dayIndex + workout_day_inc[2]
 	workoutdate = wp.workoutprogram_dt_start + timedelta(days=dayIndex)
 	wkout = Workout("%s - Olympic" % (workoutdate.strftime("%A")), workoutdate, wPercent, volume)
-	wkout.add_exercise_target_volume("Snatch", 8)
+	rndex = wkout.pick_random_exercise("Press")
+	wkout.add_exercise_target_volume(rndex['name'], 5)
 	wkout.add_exercise_target_volume("Clean and Jerk", 8)
 	wkout.add_exercise_target_volume("Deadlift", 5)
 	wkout.add_exercise("Pull ups")
