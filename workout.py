@@ -479,6 +479,7 @@ class WorkoutProgram(object):
 	
 		for p in self.workoutprogram_workouts:
 			info += p.workout_name
+			info += ' (%s) %s' % (p.workout_dt, os.linesep)
 			info += '  Targeting %.0f%% of max\n' % (p.workout_percentOfMax * 100.0)
 			print info
 			for x in p.workout_exercises:
