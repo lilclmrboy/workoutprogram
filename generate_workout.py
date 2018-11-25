@@ -19,14 +19,11 @@ import argparse
 ###################################################################################################
 
 def main(argv):
-
     parser = argparse.ArgumentParser(description='Generate Automation Scripts for PBULD00171 development.')
     parser.add_argument('--weeks', help='Number of weeks for workout', type=int, default=12)
     parser.add_argument('--user', help='Username for workout', default='Matt')
     parser.add_argument('--volume', help='Volume for workout to targer', type=float, default=2000.0)
     dv = parser.parse_args(argv)
-
-    # --weeks 9 --volume 1000.0 --user Matt
 
     # where:
     # 0 - Sunday
@@ -53,7 +50,7 @@ def main(argv):
         wPercent = workout.periodization_equation(workoutCount, totalWorkouts)
         workoutCount = workoutCount + 1
         workoutdate = wp.workoutprogram_dt_start + timedelta(days=dayIndex)
-        wkout = Workout("%s - Strength" % (workoutdate.strftime("%A")), workoutdate, wPercent, volume)
+        wkout = Workout(dv.user, "%s - Strength" % (workoutdate.strftime("%A")), workoutdate, wPercent, volume)
         rndex = wkout.pick_random_exercise("Press")
         wkout.add_exercise_target_volume(rndex['name'], 5)
         rndex = wkout.pick_random_exercise("Jerk")
@@ -70,7 +67,7 @@ def main(argv):
         workoutCount = workoutCount + 1
         dayIndex = dayIndex + workout_day_inc[1]
         workoutdate = wp.workoutprogram_dt_start + timedelta(days=dayIndex)
-        wkout = Workout("%s - Strength" % (workoutdate.strftime("%A")), workoutdate, wPercent, volume)
+        wkout = Workout(dv.user, "%s - Strength" % (workoutdate.strftime("%A")), workoutdate, wPercent, volume)
         rndex = wkout.pick_random_exercise("Press")
         wkout.add_exercise_target_volume(rndex['name'], 5)
         rndex = wkout.pick_random_exercise("Clean")
@@ -87,7 +84,7 @@ def main(argv):
         workoutCount = workoutCount + 1
         dayIndex = dayIndex + workout_day_inc[2]
         workoutdate = wp.workoutprogram_dt_start + timedelta(days=dayIndex)
-        wkout = Workout("%s - Olympic" % (workoutdate.strftime("%A")), workoutdate, wPercent, volume)
+        wkout = Workout(dv.user, "%s - Olympic" % (workoutdate.strftime("%A")), workoutdate, wPercent, volume)
         rndex = wkout.pick_random_exercise("Press")
         wkout.add_exercise_target_volume(rndex['name'], 5)
         wkout.add_exercise_target_volume("Clean and Jerk", 8)
@@ -102,10 +99,10 @@ def main(argv):
     wp.create_txt_workout()
     wp.create_icalendar_workout()
 
+
 ###################################################################################################
 ###################################################################################################
 ###################################################################################################
 
 if __name__ == '__main__':
-
     sys.exit(main(sys.argv[1:]))
