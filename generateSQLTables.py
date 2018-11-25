@@ -59,12 +59,17 @@ activities = (
 
 )
 
+# users_prs = (
+#     (1, 'Matt', 'Krugman', 97.5, "kg", 1.0, "Clean and Jerk", "2016-02-18", ""),
+#     (2, 'Matt', 'Krugman', 77.5, "kg", 1.0, "Snatch", "2016-02-18", ""),
+#     (3, 'Matt', 'Krugman', 160.0, "kg", 1.0, "Deadlift", "2016-02-18", ""),
+# 	(4, 'Matt', 'Krugman', 170.0, "kg", 1.0, "Back Squat", "2016-02-18", ""),
+# 	(5, 'Matt', 'Krugman', 69.0,  "yos", 1.0, "Climbing", "2016-02-18", ""),
+# )
+
 users_prs = (
-    (1, 'Matt', 'Krugman', 97.5, "kg", 1.0, "Clean and Jerk", "2016-02-18", ""),
-    (2, 'Matt', 'Krugman', 77.5, "kg", 1.0, "Snatch", "2016-02-18", ""),
-    (3, 'Matt', 'Krugman', 160.0, "kg", 1.0, "Deadlift", "2016-02-18", ""),
-	(4, 'Matt', 'Krugman', 170.0, "kg", 1.0, "Back Squat", "2016-02-18", ""),
-	(5, 'Matt', 'Krugman', 69.0,  "yos", 1.0, "Climbing", "2016-02-18", ""),
+    (1, 'Matt', 'Krugman', 90.0, "kg", 1.0, "Clean and Jerk", "2016-11-26", ""),
+    (2, 'Kim', 'Krugman', 50.0, "kg", 1.0, "Clean and Jerk", "2018-11-26", ""),
 )
 
 con = lite.connect('test.db')
