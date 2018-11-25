@@ -69,7 +69,7 @@ activities = (
 
 users_prs = (
     (1, 'Matt', 'Krugman', 90.0, "kg", 1.0, "Clean and Jerk", "2016-11-26", ""),
-    (2, 'Kim', 'Krugman', 50.0, "kg", 1.0, "Clean and Jerk", "2018-11-26", ""),
+    (2, 'Kim', 'Krugman', 40.0, "kg", 1.0, "Clean and Jerk", "2018-11-26", ""),
 )
 
 con = lite.connect('test.db')

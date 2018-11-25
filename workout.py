@@ -279,7 +279,20 @@ class Workout(object):
                 weight = cnjratio * self.workout_percentOfMax * self.workout_cnj_max
             else:
                 # 				print "PR defined for %s" % userPR['Exercise']
-                weight = userPR['PR'] * self.workout_percentOfMax
+                weight = cnjratio * self.workout_percentOfMax * self.workout_cnj_max
+
+                con = lite.connect(self.workout_database)
+                con.row_factory = dict_factory
+                cur = con.cursor()
+                cur.execute("SELECT * FROM UserRecords WHERE FirstName is '{tn}' AND Exercise is '{tx}'".format(tn=self.workout_username, tx="Clean and Jerk"))
+
+                result = cur.fetchone()
+                con.close()
+
+                cnj_max = result["PR"]
+                weight = cnjratio * cnj_max
+                weight = weight * self.workout_percentOfMax
+                weight = weight
 
             for i in range(0, nSets):
                 ex.add_set(weight, reps, time, units)
@@ -316,6 +329,20 @@ class Workout(object):
         if (units == "kg"):
             if not userPR:
                 weight = cnjratio * self.workout_percentOfMax * self.workout_cnj_max
+
+                con = lite.connect(self.workout_database)
+                con.row_factory = dict_factory
+                cur = con.cursor()
+                cur.execute("SELECT * FROM UserRecords WHERE FirstName is '{tn}' AND Exercise is '{tx}'".format(tn=self.workout_username, tx="Clean and Jerk"))
+
+                result = cur.fetchone()
+                con.close()
+
+                cnj_max = result["PR"]
+                weight = cnjratio * cnj_max
+                weight = weight * self.workout_percentOfMax
+                weight = weight
+
             else:
                 # 				print "PR defined for %s" % userPR['Exercise']
                 weight = userPR['PR'] * self.workout_percentOfMax
@@ -325,19 +352,20 @@ class Workout(object):
         # Descr 1  :	f(x) = const + a1*x +...+ a3*x^3
         # Descr 2  :	deg: degree of the polynomial
         # deg  	=	   3.0000
-        const = 162.0201
-        a1 = -499.2764
-        a2 = 540.4491
-        a3 = -202.1640
-        x = self.workout_percentOfMax
-        if (nrepsmax == 8):
-            nrepsmax = int(const + a1 * x + a2 * x * x + a3 * x * x * x)
+        # const = 162.0201
+        # a1 = -499.2764
+        # a2 = 540.4491
+        # a3 = -202.1640
+        # x = self.workout_percentOfMax
+        # if (nrepsmax == 8):
+        #     nrepsmax = int(const + a1 * x + a2 * x * x + a3 * x * x * x)
 
         for i in range(0, nsets):
             ex.add_set(weight, nrepsmax, time, units)
         self.workout_exercises.append(ex)
 
-        result = self.solve_exercise_volume(self.workout_exercises[-1], self.workout_volume)
+        vol = self.workout_volume * (cnjratio / 1.0)
+        result = self.solve_exercise_volume(self.workout_exercises[-1], vol)
 
     ######################################################################################
 
@@ -385,8 +413,7 @@ class Workout(object):
 
             for i in range(0, nSets):
                 setReps_calc.append(random.randint(minRep, maxRep))
-                volume_calc = volume_calc + exercise.exercise_sets[i].weight * setReps_calc[i]
-            # print("volume_calc: %f" % volume_calc)
+                volume_calc += exercise.exercise_sets[i].weight * setReps_calc[i]
 
             # Get the absolute error value
             error_total = math.fabs(volume - volume_calc)
